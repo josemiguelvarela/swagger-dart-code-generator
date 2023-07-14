@@ -611,7 +611,7 @@ static $returnType $fromJsonFunction($valueType? value) => $enumNameCamelCase$fr
     typeName =
         nullable(typeName, className, requiredProperties, propertyKey, prop);
 
-    return '\t$jsonKeyContent\tfinal $typeName ${generateFieldName(propertyName)};${unknownEnumValue.fromJson}';
+    return '\t$jsonKeyContent\t$typeName ${generateFieldName(propertyName)};${unknownEnumValue.fromJson}';
   }
 
   String _validatePropertyKey(String key) {
@@ -668,7 +668,7 @@ static $returnType $fromJsonFunction($valueType? value) => $enumNameCamelCase$fr
     typeName =
         nullable(typeName, className, requiredProperties, propertyKey, prop);
 
-    return '\t$jsonKeyContent\tfinal $typeName $propertyName;${unknownEnumValue.fromJson}';
+    return '\t$jsonKeyContent\t$typeName $propertyName;${unknownEnumValue.fromJson}';
   }
 
   String generatePropertyContentByRef(
@@ -743,7 +743,7 @@ static $returnType $fromJsonFunction($valueType? value) => $enumNameCamelCase$fr
       typeName += '?';
     }
 
-    return '\t$jsonKeyContent\tfinal $typeName $propertyName;${unknownEnumValue.fromJson}';
+    return '\t$jsonKeyContent\t$typeName $propertyName;${unknownEnumValue.fromJson}';
   }
 
   String generateEnumPropertyContent(
