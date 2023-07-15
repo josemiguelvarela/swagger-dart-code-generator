@@ -7,7 +7,7 @@ part of 'pet_service_swagger.swagger.dart';
 // **************************************************************************
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['id'] as num?,
+      id: json['id'] as int?,
       name: json['name'] as String? ?? '',
     );
 
@@ -26,7 +26,7 @@ Map<String, dynamic> _$CategoryToJson(Category instance) {
 }
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
-      id: json['id'] as num?,
+      id: json['id'] as int?,
       username: json['username'] as String? ?? '',
       firstName: json['firstName'] as String? ?? '',
       lastName: json['lastName'] as String? ?? '',
@@ -57,7 +57,7 @@ Map<String, dynamic> _$UserToJson(User instance) {
 }
 
 Tag _$TagFromJson(Map<String, dynamic> json) => Tag(
-      id: json['id'] as num?,
+      id: json['id'] as int?,
       name: json['name'] as String? ?? '',
     );
 
@@ -76,7 +76,7 @@ Map<String, dynamic> _$TagToJson(Tag instance) {
 }
 
 Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
-      id: json['id'] as num?,
+      id: json['id'] as int?,
       category: json['category'] == null
           ? null
           : Category.fromJson(json['category'] as Map<String, dynamic>),

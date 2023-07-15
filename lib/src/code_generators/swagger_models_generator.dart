@@ -921,7 +921,7 @@ static $returnType $fromJsonFunction($valueType? value) => $enumNameCamelCase$fr
     listPropertyName = nullable(
         listPropertyName, className, requiredParameters, propertyKey, prop);
 
-    return '$jsonKeyContent  final $listPropertyName ${generateFieldName(propertyName)};${unknownEnumValue.fromJson}';
+    return '$jsonKeyContent  $listPropertyName ${generateFieldName(propertyName)};${unknownEnumValue.fromJson}';
   }
 
   String generateGeneralPropertyContent(
@@ -989,7 +989,7 @@ static $returnType $fromJsonFunction($valueType? value) => $enumNameCamelCase$fr
     typeName =
         nullable(typeName, className, requiredProperties, propertyKey, prop);
 
-    return '\t$jsonKeyContent  final $typeName $propertyName;${unknownEnumValue.fromJson}';
+    return '\t$jsonKeyContent  $typeName $propertyName;${unknownEnumValue.fromJson}';
   }
 
   String generatePropertyContentByType(

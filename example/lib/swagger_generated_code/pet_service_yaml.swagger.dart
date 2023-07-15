@@ -9,6 +9,7 @@ import 'package:chopper/chopper.dart';
 
 import 'client_mapping.dart';
 import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:chopper/chopper.dart' as chopper;
 import 'pet_service_yaml.enums.swagger.dart' as enums;
 export 'pet_service_yaml.enums.swagger.dart';
@@ -24,7 +25,9 @@ part 'pet_service_yaml.swagger.g.dart';
 abstract class PetServiceYaml extends ChopperService {
   static PetServiceYaml create({
     ChopperClient? client,
+    http.Client? httpClient,
     Authenticator? authenticator,
+    Converter? converter,
     Uri? baseUrl,
     Iterable<dynamic>? interceptors,
   }) {
@@ -34,8 +37,9 @@ abstract class PetServiceYaml extends ChopperService {
 
     final newClient = ChopperClient(
         services: [_$PetServiceYaml()],
-        converter: $JsonSerializableConverter(),
+        converter: converter ?? $JsonSerializableConverter(),
         interceptors: interceptors ?? [],
+        client: httpClient,
         authenticator: authenticator,
         baseUrl: baseUrl ?? Uri.parse('http://petstore.swagger.io/v2'));
     return _$PetServiceYaml(newClient);
@@ -122,7 +126,7 @@ abstract class PetServiceYaml extends ChopperService {
   ///@param petId ID of pet to return
   Future<chopper.Response<Pet>> petPetIdGet({
     required int? petId,
-    String? apiKey,
+    ApiKey? apiKey,
     String? cacheControl,
   }) {
     generatedMapping.putIfAbsent(Pet, () => Pet.fromJsonFactory);
@@ -136,7 +140,7 @@ abstract class PetServiceYaml extends ChopperService {
   @Get(path: '/pet/{petId}')
   Future<chopper.Response<Pet>> _petPetIdGet({
     @Path('petId') required int? petId,
-    @Header('api_key') String? apiKey,
+    @Header('api_key') ApiKey? apiKey,
     @Header('Cache-Control') String? cacheControl,
   });
 
@@ -228,7 +232,7 @@ abstract class PetServiceYaml extends ChopperService {
 
   ///Returns pet inventories by status
   Future<chopper.Response<Object>> storeInventoryGet({
-    String? apiKey,
+    ApiKey? apiKey,
     String? cacheControl,
   }) {
     return _storeInventoryGet(apiKey: apiKey, cacheControl: cacheControl);
@@ -237,7 +241,7 @@ abstract class PetServiceYaml extends ChopperService {
   ///Returns pet inventories by status
   @Get(path: '/store/inventory')
   Future<chopper.Response<Object>> _storeInventoryGet({
-    @Header('api_key') String? apiKey,
+    @Header('api_key') ApiKey? apiKey,
     @Header('Cache-Control') String? cacheControl,
   });
 
@@ -453,44 +457,20 @@ class Category {
   factory Category.fromJson(Map<String, dynamic> json) =>
       _$CategoryFromJson(json);
 
-  @JsonKey(name: 'id', includeIfNull: false)
-  final num? id;
-  @JsonKey(name: 'name', includeIfNull: false, defaultValue: '')
-  final String? name;
-  static const fromJsonFactory = _$CategoryFromJson;
   static const toJsonFactory = _$CategoryToJson;
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
 
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is Category &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.name, name) ||
-                const DeepCollectionEquality().equals(other.name, name)));
-  }
+  @JsonKey(name: 'id', includeIfNull: false)
+  int? id;
+  @JsonKey(name: 'name', includeIfNull: false, defaultValue: '')
+  String? name;
+  static const fromJsonFactory = _$CategoryFromJson;
 
   @override
   String toString() => jsonEncode(this);
 
   @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(name) ^
-      runtimeType.hashCode;
-}
-
-extension $CategoryExtension on Category {
-  Category copyWith({num? id, String? name}) {
-    return Category(id: id ?? this.id, name: name ?? this.name);
-  }
-
-  Category copyWithWrapped({Wrapped<num?>? id, Wrapped<String?>? name}) {
-    return Category(
-        id: (id != null ? id.value : this.id),
-        name: (name != null ? name.value : this.name));
-  }
+  int get hashCode => runtimeType.hashCode;
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -508,109 +488,32 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
-  @JsonKey(name: 'id', includeIfNull: false)
-  final num? id;
-  @JsonKey(name: 'username', includeIfNull: false, defaultValue: '')
-  final String? username;
-  @JsonKey(name: 'firstName', includeIfNull: false, defaultValue: '')
-  final String? firstName;
-  @JsonKey(name: 'lastName', includeIfNull: false, defaultValue: '')
-  final String? lastName;
-  @JsonKey(name: 'email', includeIfNull: false, defaultValue: '')
-  final String? email;
-  @JsonKey(name: 'password', includeIfNull: false, defaultValue: '')
-  final String? password;
-  @JsonKey(name: 'phone', includeIfNull: false, defaultValue: '')
-  final String? phone;
-  @JsonKey(name: 'userStatus', includeIfNull: false)
-  final int? userStatus;
-  static const fromJsonFactory = _$UserFromJson;
   static const toJsonFactory = _$UserToJson;
   Map<String, dynamic> toJson() => _$UserToJson(this);
 
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is User &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.username, username) ||
-                const DeepCollectionEquality()
-                    .equals(other.username, username)) &&
-            (identical(other.firstName, firstName) ||
-                const DeepCollectionEquality()
-                    .equals(other.firstName, firstName)) &&
-            (identical(other.lastName, lastName) ||
-                const DeepCollectionEquality()
-                    .equals(other.lastName, lastName)) &&
-            (identical(other.email, email) ||
-                const DeepCollectionEquality().equals(other.email, email)) &&
-            (identical(other.password, password) ||
-                const DeepCollectionEquality()
-                    .equals(other.password, password)) &&
-            (identical(other.phone, phone) ||
-                const DeepCollectionEquality().equals(other.phone, phone)) &&
-            (identical(other.userStatus, userStatus) ||
-                const DeepCollectionEquality()
-                    .equals(other.userStatus, userStatus)));
-  }
+  @JsonKey(name: 'id', includeIfNull: false)
+  int? id;
+  @JsonKey(name: 'username', includeIfNull: false, defaultValue: '')
+  String? username;
+  @JsonKey(name: 'firstName', includeIfNull: false, defaultValue: '')
+  String? firstName;
+  @JsonKey(name: 'lastName', includeIfNull: false, defaultValue: '')
+  String? lastName;
+  @JsonKey(name: 'email', includeIfNull: false, defaultValue: '')
+  String? email;
+  @JsonKey(name: 'password', includeIfNull: false, defaultValue: '')
+  String? password;
+  @JsonKey(name: 'phone', includeIfNull: false, defaultValue: '')
+  String? phone;
+  @JsonKey(name: 'userStatus', includeIfNull: false)
+  int? userStatus;
+  static const fromJsonFactory = _$UserFromJson;
 
   @override
   String toString() => jsonEncode(this);
 
   @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(username) ^
-      const DeepCollectionEquality().hash(firstName) ^
-      const DeepCollectionEquality().hash(lastName) ^
-      const DeepCollectionEquality().hash(email) ^
-      const DeepCollectionEquality().hash(password) ^
-      const DeepCollectionEquality().hash(phone) ^
-      const DeepCollectionEquality().hash(userStatus) ^
-      runtimeType.hashCode;
-}
-
-extension $UserExtension on User {
-  User copyWith(
-      {num? id,
-      String? username,
-      String? firstName,
-      String? lastName,
-      String? email,
-      String? password,
-      String? phone,
-      int? userStatus}) {
-    return User(
-        id: id ?? this.id,
-        username: username ?? this.username,
-        firstName: firstName ?? this.firstName,
-        lastName: lastName ?? this.lastName,
-        email: email ?? this.email,
-        password: password ?? this.password,
-        phone: phone ?? this.phone,
-        userStatus: userStatus ?? this.userStatus);
-  }
-
-  User copyWithWrapped(
-      {Wrapped<num?>? id,
-      Wrapped<String?>? username,
-      Wrapped<String?>? firstName,
-      Wrapped<String?>? lastName,
-      Wrapped<String?>? email,
-      Wrapped<String?>? password,
-      Wrapped<String?>? phone,
-      Wrapped<int?>? userStatus}) {
-    return User(
-        id: (id != null ? id.value : this.id),
-        username: (username != null ? username.value : this.username),
-        firstName: (firstName != null ? firstName.value : this.firstName),
-        lastName: (lastName != null ? lastName.value : this.lastName),
-        email: (email != null ? email.value : this.email),
-        password: (password != null ? password.value : this.password),
-        phone: (phone != null ? phone.value : this.phone),
-        userStatus: (userStatus != null ? userStatus.value : this.userStatus));
-  }
+  int get hashCode => runtimeType.hashCode;
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -622,44 +525,20 @@ class Tag {
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 
-  @JsonKey(name: 'id', includeIfNull: false)
-  final num? id;
-  @JsonKey(name: 'name', includeIfNull: false, defaultValue: '')
-  final String? name;
-  static const fromJsonFactory = _$TagFromJson;
   static const toJsonFactory = _$TagToJson;
   Map<String, dynamic> toJson() => _$TagToJson(this);
 
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is Tag &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.name, name) ||
-                const DeepCollectionEquality().equals(other.name, name)));
-  }
+  @JsonKey(name: 'id', includeIfNull: false)
+  int? id;
+  @JsonKey(name: 'name', includeIfNull: false, defaultValue: '')
+  String? name;
+  static const fromJsonFactory = _$TagFromJson;
 
   @override
   String toString() => jsonEncode(this);
 
   @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(name) ^
-      runtimeType.hashCode;
-}
-
-extension $TagExtension on Tag {
-  Tag copyWith({num? id, String? name}) {
-    return Tag(id: id ?? this.id, name: name ?? this.name);
-  }
-
-  Tag copyWithWrapped({Wrapped<num?>? id, Wrapped<String?>? name}) {
-    return Tag(
-        id: (id != null ? id.value : this.id),
-        name: (name != null ? name.value : this.name));
-  }
+  int get hashCode => runtimeType.hashCode;
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -675,93 +554,33 @@ class Pet {
 
   factory Pet.fromJson(Map<String, dynamic> json) => _$PetFromJson(json);
 
+  static const toJsonFactory = _$PetToJson;
+  Map<String, dynamic> toJson() => _$PetToJson(this);
+
   @JsonKey(name: 'id', includeIfNull: false)
-  final num? id;
+  int? id;
   @JsonKey(name: 'category', includeIfNull: false)
-  final Category? category;
+  Category? category;
   @JsonKey(name: 'name', includeIfNull: false, defaultValue: '')
-  final String? name;
+  String? name;
   @JsonKey(name: 'photoUrls', includeIfNull: false)
-  final List<String>? photoUrls;
+  List<String>? photoUrls;
   @JsonKey(name: 'tags', includeIfNull: false)
-  final List<Tag>? tags;
+  List<Tag>? tags;
   @JsonKey(
     name: 'status',
     includeIfNull: false,
     toJson: petStatusToJson,
     fromJson: petStatusFromJson,
   )
-  final enums.PetStatus? status;
+  enums.PetStatus? status;
   static const fromJsonFactory = _$PetFromJson;
-  static const toJsonFactory = _$PetToJson;
-  Map<String, dynamic> toJson() => _$PetToJson(this);
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is Pet &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.category, category) ||
-                const DeepCollectionEquality()
-                    .equals(other.category, category)) &&
-            (identical(other.name, name) ||
-                const DeepCollectionEquality().equals(other.name, name)) &&
-            (identical(other.photoUrls, photoUrls) ||
-                const DeepCollectionEquality()
-                    .equals(other.photoUrls, photoUrls)) &&
-            (identical(other.tags, tags) ||
-                const DeepCollectionEquality().equals(other.tags, tags)) &&
-            (identical(other.status, status) ||
-                const DeepCollectionEquality().equals(other.status, status)));
-  }
 
   @override
   String toString() => jsonEncode(this);
 
   @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(category) ^
-      const DeepCollectionEquality().hash(name) ^
-      const DeepCollectionEquality().hash(photoUrls) ^
-      const DeepCollectionEquality().hash(tags) ^
-      const DeepCollectionEquality().hash(status) ^
-      runtimeType.hashCode;
-}
-
-extension $PetExtension on Pet {
-  Pet copyWith(
-      {num? id,
-      Category? category,
-      String? name,
-      List<String>? photoUrls,
-      List<Tag>? tags,
-      enums.PetStatus? status}) {
-    return Pet(
-        id: id ?? this.id,
-        category: category ?? this.category,
-        name: name ?? this.name,
-        photoUrls: photoUrls ?? this.photoUrls,
-        tags: tags ?? this.tags,
-        status: status ?? this.status);
-  }
-
-  Pet copyWithWrapped(
-      {Wrapped<num?>? id,
-      Wrapped<Category?>? category,
-      Wrapped<String?>? name,
-      Wrapped<List<String>?>? photoUrls,
-      Wrapped<List<Tag>?>? tags,
-      Wrapped<enums.PetStatus?>? status}) {
-    return Pet(
-        id: (id != null ? id.value : this.id),
-        category: (category != null ? category.value : this.category),
-        name: (name != null ? name.value : this.name),
-        photoUrls: (photoUrls != null ? photoUrls.value : this.photoUrls),
-        tags: (tags != null ? tags.value : this.tags),
-        status: (status != null ? status.value : this.status));
-  }
+  int get hashCode => runtimeType.hashCode;
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -775,56 +594,22 @@ class ApiResponse {
   factory ApiResponse.fromJson(Map<String, dynamic> json) =>
       _$ApiResponseFromJson(json);
 
-  @JsonKey(name: 'code', includeIfNull: false)
-  final int? code;
-  @JsonKey(name: 'type', includeIfNull: false, defaultValue: '')
-  final String? type;
-  @JsonKey(name: 'message', includeIfNull: false, defaultValue: '')
-  final String? message;
-  static const fromJsonFactory = _$ApiResponseFromJson;
   static const toJsonFactory = _$ApiResponseToJson;
   Map<String, dynamic> toJson() => _$ApiResponseToJson(this);
 
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ApiResponse &&
-            (identical(other.code, code) ||
-                const DeepCollectionEquality().equals(other.code, code)) &&
-            (identical(other.type, type) ||
-                const DeepCollectionEquality().equals(other.type, type)) &&
-            (identical(other.message, message) ||
-                const DeepCollectionEquality().equals(other.message, message)));
-  }
+  @JsonKey(name: 'code', includeIfNull: false)
+  int? code;
+  @JsonKey(name: 'type', includeIfNull: false, defaultValue: '')
+  String? type;
+  @JsonKey(name: 'message', includeIfNull: false, defaultValue: '')
+  String? message;
+  static const fromJsonFactory = _$ApiResponseFromJson;
 
   @override
   String toString() => jsonEncode(this);
 
   @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(code) ^
-      const DeepCollectionEquality().hash(type) ^
-      const DeepCollectionEquality().hash(message) ^
-      runtimeType.hashCode;
-}
-
-extension $ApiResponseExtension on ApiResponse {
-  ApiResponse copyWith({int? code, String? type, String? message}) {
-    return ApiResponse(
-        code: code ?? this.code,
-        type: type ?? this.type,
-        message: message ?? this.message);
-  }
-
-  ApiResponse copyWithWrapped(
-      {Wrapped<int?>? code,
-      Wrapped<String?>? type,
-      Wrapped<String?>? message}) {
-    return ApiResponse(
-        code: (code != null ? code.value : this.code),
-        type: (type != null ? type.value : this.type),
-        message: (message != null ? message.value : this.message));
-  }
+  int get hashCode => runtimeType.hashCode;
 }
 
 String? orderStatusToJson(enums.OrderStatus? orderStatus) {

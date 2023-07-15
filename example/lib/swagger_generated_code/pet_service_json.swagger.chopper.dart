@@ -99,12 +99,12 @@ class _$PetServiceJson extends PetServiceJson {
   @override
   Future<Response<Pet>> _petPetIdGet({
     required int? petId,
-    String? apiKey,
+    InvalidType apiKey,
     String? cacheControl,
   }) {
     final Uri $url = Uri.parse('/pet/${petId}');
     final Map<String, String> $headers = {
-      if (apiKey != null) 'api_key': apiKey,
+      'api_key': apiKey,
       if (cacheControl != null) 'Cache-Control': cacheControl,
     };
     final Request $request = Request(
@@ -188,12 +188,12 @@ class _$PetServiceJson extends PetServiceJson {
 
   @override
   Future<Response<Object>> _storeInventoryGet({
-    String? apiKey,
+    InvalidType apiKey,
     String? cacheControl,
   }) {
     final Uri $url = Uri.parse('/store/inventory');
     final Map<String, String> $headers = {
-      if (apiKey != null) 'api_key': apiKey,
+      'api_key': apiKey,
       if (cacheControl != null) 'Cache-Control': cacheControl,
     };
     final Request $request = Request(
@@ -206,8 +206,8 @@ class _$PetServiceJson extends PetServiceJson {
   }
 
   @override
-  Future<Response<Order>> _storeOrderPost({
-    required Order? body,
+  Future<Response<InvalidType>> _storeOrderPost({
+    required InvalidType body,
     String? cacheControl,
   }) {
     final Uri $url = Uri.parse('/store/order');
@@ -222,11 +222,11 @@ class _$PetServiceJson extends PetServiceJson {
       body: $body,
       headers: $headers,
     );
-    return client.send<Order, Order>($request);
+    return client.send<InvalidType, InvalidType>($request);
   }
 
   @override
-  Future<Response<Order>> _storeOrderOrderIdGet({
+  Future<Response<InvalidType>> _storeOrderOrderIdGet({
     required int? orderId,
     String? cacheControl,
   }) {
@@ -240,7 +240,7 @@ class _$PetServiceJson extends PetServiceJson {
       client.baseUrl,
       headers: $headers,
     );
-    return client.send<Order, Order>($request);
+    return client.send<InvalidType, InvalidType>($request);
   }
 
   @override
